@@ -1,0 +1,54 @@
+-- Player Esp </>
+
+local function isR15Part(part)
+    if not part:IsA("BasePart") then
+        return false
+    end
+
+    local humanoid = part.Parent:FindFirstChildWhichIsA("Humanoid")
+    if not humanoid then
+        return false
+    end
+
+    local rigType = humanoid.RigType
+    if rigType ~= Enum.HumanoidRigType.R15 then
+        return false
+    end
+
+    local ignoreFolder = workspace:FindFirstChild("Ignore")
+    if ignoreFolder and part:IsDescendantOf(ignoreFolder) then
+        return false
+    end
+
+    return true
+end
+
+local function adornPart(part)
+    local adornment = Instance.new("BoxHandleAdornment")
+    adornment.Adornee = part
+    adornment.AlwaysOnTop = true
+    adornment.ZIndex = 1
+    adornment.Size = part.Size
+    adornment.Color = BrickColor.new("Bright red")
+    adornment.Transparency = 0.3
+    adornment.Parent = part
+end
+
+local function onDescendantAdded(descendant)
+    if isR15Part(descendant) then
+        adornPart(descendant)
+    end
+end
+
+local function adornR15Parts()
+    local parts = workspace:GetDescendants()
+    for _, part in ipairs(parts) do
+        if isR15Part(part) then
+            adornPart(part)
+        end
+    end
+end
+
+adornR15Parts()
+
+workspace.DescendantAdded:Connect(onDescendantAdded)
